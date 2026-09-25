@@ -17,8 +17,9 @@ from sklearn.metrics import (
     confusion_matrix
 )
 
+
 # ----------------------------------------------------------------
-# Configuration
+# 1. CONFIGURATION
 # ----------------------------------------------------------------
 
 LOGISTIC_PATH = "logistic_regression.pkl"
@@ -30,8 +31,15 @@ ENCODER_PATH = "label_encoder.pkl"
 X_TEST_PATH = "X_test.pkl"
 Y_TEST_PATH = "y_test.pkl"
 
+SELECTED_MODEL_PATH = "selected_model.pkl"
+MODEL_METADATA_PATH = "model_metadata.pkl"
+
+MODEL_COMPARISON_PATH = "model_comparison.csv"
+PERFORMANCE_GRAPH_PATH = "model_performance_comparison.png"
+
+
 # ----------------------------------------------------------------
-# 1. LOAD TEST DATA
+# 2. LOAD TEST DATA
 # ----------------------------------------------------------------
 
 print("=" * 70)
@@ -49,9 +57,12 @@ print(X_test.shape)
 print("\nTest target shape:")
 print(y_test.shape)
 
+
 # ----------------------------------------------------------------
-# 2. LOAD LABEL ENCODER
+# 3. LOAD LABEL ENCODER
 # ----------------------------------------------------------------
+
+print("\nLoading label encoder...")
 
 label_encoder = joblib.load(
     ENCODER_PATH
@@ -64,8 +75,12 @@ print("\nDisease categories:")
 for i, category in enumerate(class_names):
     print(f"{i}: {category}")
 
+print("\nNumber of disease categories:")
+print(len(class_names))
+
+
 # ----------------------------------------------------------------
-# 3. LOAD MODELS
+# 4. LOAD TRAINED MODELS
 # ----------------------------------------------------------------
 
 print("\nLoading trained models...")
@@ -88,10 +103,11 @@ models = {
     "Linear SVM": svm_model
 }
 
-print("All models loaded successfully.")
+print("\nAll models loaded successfully.")
+
 
 # ----------------------------------------------------------------
-# 4. EVALUATE MODELS
+# 5. EVALUATE MODELS
 # ----------------------------------------------------------------
 
 results = []
@@ -102,43 +118,120 @@ for model_name, model in models.items():
     print(f"EVALUATING: {model_name}")
     print("=" * 70)
 
+    # ------------------------------------------------------------
     # Predictions
-    y_pred = model.predict(X_test)
+    # ------------------------------------------------------------
 
-    # Metrics
+    y_pred = model.predict(
+        X_test
+    )
+
+    # ------------------------------------------------------------
+    # Accuracy
+    # ------------------------------------------------------------
+
     accuracy = accuracy_score(
         y_test,
         y_pred
     )
 
-    precision = precision_score(
+    # ------------------------------------------------------------
+    # Weighted Metrics
+    # ------------------------------------------------------------
+    # Weighted metrics consider class size.
+    # Larger disease categories have more influence.
+    # ------------------------------------------------------------
+
+    precision_weighted = precision_score(
         y_test,
         y_pred,
         average="weighted",
         zero_division=0
     )
 
-    recall = recall_score(
+    recall_weighted = recall_score(
         y_test,
         y_pred,
         average="weighted",
         zero_division=0
     )
 
-    f1 = f1_score(
+    f1_weighted = f1_score(
         y_test,
         y_pred,
         average="weighted",
         zero_division=0
     )
-
-    print(f"\nAccuracy : {accuracy:.4f}")
-    print(f"Precision: {precision:.4f}")
-    print(f"Recall   : {recall:.4f}")
-    print(f"F1 Score : {f1:.4f}")
 
     # ------------------------------------------------------------
-    # Classification Report
+    # Macro Metrics
+    # ------------------------------------------------------------
+    # Macro metrics give equal importance to every disease category.
+    # This is useful because the dataset is imbalanced.
+    # ------------------------------------------------------------
+
+    precision_macro = precision_score(
+        y_test,
+        y_pred,
+        average="macro",
+        zero_division=0
+    )
+
+    recall_macro = recall_score(
+        y_test,
+        y_pred,
+        average="macro",
+        zero_division=0
+    )
+
+    f1_macro = f1_score(
+        y_test,
+        y_pred,
+        average="macro",
+        zero_division=0
+    )
+
+    # ------------------------------------------------------------
+    # Display Metrics
+    # ------------------------------------------------------------
+
+    print("\nMODEL PERFORMANCE")
+
+    print(f"\nAccuracy            : {accuracy:.4f}")
+
+    print(
+        f"Precision (Weighted): "
+        f"{precision_weighted:.4f}"
+    )
+
+    print(
+        f"Recall (Weighted)   : "
+        f"{recall_weighted:.4f}"
+    )
+
+    print(
+        f"F1 Score (Weighted) : "
+        f"{f1_weighted:.4f}"
+    )
+
+    print(
+        f"\nPrecision (Macro)   : "
+        f"{precision_macro:.4f}"
+    )
+
+    print(
+        f"Recall (Macro)      : "
+        f"{recall_macro:.4f}"
+    )
+
+    print(
+        f"F1 Score (Macro)    : "
+        f"{f1_macro:.4f}"
+    )
+
+
+    # ------------------------------------------------------------
+    # 6. CLASSIFICATION REPORT
     # ------------------------------------------------------------
 
     report = classification_report(
@@ -163,6 +256,7 @@ for model_name, model in models.items():
         f"{safe_name}_classification_report.txt"
     )
 
+    # Save classification report
     with open(
         report_path,
         "w",
@@ -174,29 +268,61 @@ for model_name, model in models.items():
         )
 
         file.write(
-            f"Accuracy : {accuracy:.4f}\n"
+            f"Accuracy: {accuracy:.4f}\n\n"
         )
 
         file.write(
-            f"Precision: {precision:.4f}\n"
+            "WEIGHTED METRICS\n"
         )
 
         file.write(
-            f"Recall   : {recall:.4f}\n"
+            f"Precision Weighted: "
+            f"{precision_weighted:.4f}\n"
         )
 
         file.write(
-            f"F1 Score : {f1:.4f}\n\n"
+            f"Recall Weighted: "
+            f"{recall_weighted:.4f}\n"
         )
 
         file.write(
-            "Classification Report:\n"
+            f"F1 Weighted: "
+            f"{f1_weighted:.4f}\n\n"
+        )
+
+        file.write(
+            "MACRO METRICS\n"
+        )
+
+        file.write(
+            f"Precision Macro: "
+            f"{precision_macro:.4f}\n"
+        )
+
+        file.write(
+            f"Recall Macro: "
+            f"{recall_macro:.4f}\n"
+        )
+
+        file.write(
+            f"F1 Macro: "
+            f"{f1_macro:.4f}\n\n"
+        )
+
+        file.write(
+            "CLASSIFICATION REPORT\n"
         )
 
         file.write(report)
 
+    print(
+        f"\nClassification report saved: "
+        f"{report_path}"
+    )
+
+
     # ------------------------------------------------------------
-    # Confusion Matrix
+    # 7. CONFUSION MATRIX
     # ------------------------------------------------------------
 
     cm = confusion_matrix(
@@ -206,7 +332,7 @@ for model_name, model in models.items():
     )
 
     plt.figure(
-        figsize=(10, 8)
+        figsize=(12, 9)
     )
 
     sns.heatmap(
@@ -253,50 +379,95 @@ for model_name, model in models.items():
 
     plt.close()
 
-    # Store metrics
+    print(
+        f"Confusion matrix saved: "
+        f"{confusion_path}"
+    )
+
+
+    # ------------------------------------------------------------
+    # 8. STORE MODEL RESULTS
+    # ------------------------------------------------------------
+
     results.append({
+
         "model": model_name,
+
         "accuracy": accuracy,
-        "precision_weighted": precision,
-        "recall_weighted": recall,
-        "f1_weighted": f1
+
+        "precision_weighted":
+            precision_weighted,
+
+        "recall_weighted":
+            recall_weighted,
+
+        "f1_weighted":
+            f1_weighted,
+
+        "precision_macro":
+            precision_macro,
+
+        "recall_macro":
+            recall_macro,
+
+        "f1_macro":
+            f1_macro
     })
 
+
 # ----------------------------------------------------------------
-# 5. MODEL COMPARISON
+# 9. CREATE MODEL COMPARISON TABLE
 # ----------------------------------------------------------------
 
 print("\n" + "=" * 70)
 print("MODEL COMPARISON")
 print("=" * 70)
 
-results_df = pd.DataFrame(results)
+results_df = pd.DataFrame(
+    results
+)
+
+
+# ----------------------------------------------------------------
+# 10. SORT MODELS USING MACRO F1 SCORE
+# ----------------------------------------------------------------
+# Macro F1 gives equal importance to all disease categories.
+# This is useful for an imbalanced multiclass dataset.
+# ----------------------------------------------------------------
 
 results_df = results_df.sort_values(
-    "f1_weighted",
+    by="f1_macro",
     ascending=False
-).reset_index(drop=True)
+).reset_index(
+    drop=True
+)
 
-print("\n")
+print("\nModel Comparison:\n")
+
 print(
     results_df.to_string(
         index=False
     )
 )
 
-# Save comparison
+
+# ----------------------------------------------------------------
+# 11. SAVE MODEL COMPARISON
+# ----------------------------------------------------------------
+
 results_df.to_csv(
-    "model_comparison.csv",
+    MODEL_COMPARISON_PATH,
     index=False
 )
 
 print(
-    "\nModel comparison saved to: "
-    "model_comparison.csv"
+    f"\nModel comparison saved to: "
+    f"{MODEL_COMPARISON_PATH}"
 )
 
+
 # ----------------------------------------------------------------
-# 6. PERFORMANCE COMPARISON GRAPH
+# 12. PERFORMANCE COMPARISON GRAPH
 # ----------------------------------------------------------------
 
 plot_df = results_df.set_index(
@@ -306,12 +477,16 @@ plot_df = results_df.set_index(
         "accuracy",
         "precision_weighted",
         "recall_weighted",
-        "f1_weighted"
+        "f1_weighted",
+        "precision_macro",
+        "recall_macro",
+        "f1_macro"
     ]
 ]
 
+
 plt.figure(
-    figsize=(12, 6)
+    figsize=(14, 7)
 )
 
 plot_df.plot(
@@ -324,11 +499,11 @@ plt.title(
 )
 
 plt.xlabel(
-    "Model"
+    "Machine Learning Model"
 )
 
 plt.ylabel(
-    "Score"
+    "Performance Score"
 )
 
 plt.ylim(
@@ -342,111 +517,240 @@ plt.xticks(
 )
 
 plt.legend(
-    title="Metric"
+    title="Evaluation Metric",
+    bbox_to_anchor=(1.05, 1),
+    loc="upper left"
 )
 
 plt.tight_layout()
 
 plt.savefig(
-    "model_performance_comparison.png",
+    PERFORMANCE_GRAPH_PATH,
     dpi=150,
     bbox_inches="tight"
 )
 
 plt.close()
 
+print(
+    f"\nPerformance comparison graph saved to: "
+    f"{PERFORMANCE_GRAPH_PATH}"
+)
+
+
 # ----------------------------------------------------------------
-# 7. SELECT MODEL
+# 13. SELECT FINAL MODEL
+# ----------------------------------------------------------------
+# Select model with highest Macro F1 Score
 # ----------------------------------------------------------------
 
-best_model_name = results_df.iloc[0]["model"]
+best_model_name = results_df.iloc[0][
+    "model"
+]
+
+best_row = results_df.iloc[0]
 
 print("\n" + "=" * 70)
 print("SELECTED MODEL")
 print("=" * 70)
 
 print(
-    f"\nSelected model based on highest weighted F1-score:"
+    "\nSelected model based on "
+    "highest Macro F1-score:"
 )
 
 print(
     best_model_name
 )
 
-# Get actual model object
+print(
+    f"\nAccuracy: "
+    f"{best_row['accuracy']:.4f}"
+)
+
+print(
+    f"Weighted F1: "
+    f"{best_row['f1_weighted']:.4f}"
+)
+
+print(
+    f"Macro F1: "
+    f"{best_row['f1_macro']:.4f}"
+)
+
+
+# ----------------------------------------------------------------
+# 14. GET SELECTED MODEL OBJECT
+# ----------------------------------------------------------------
+
 best_model = models[
     best_model_name
 ]
 
+
 # ----------------------------------------------------------------
-# 8. SAVE SELECTED MODEL
+# 15. SAVE SELECTED MODEL
 # ----------------------------------------------------------------
 
 joblib.dump(
     best_model,
-    "selected_model.pkl"
+    SELECTED_MODEL_PATH
 )
 
 print(
-    "\nSelected model saved to: "
-    "selected_model.pkl"
+    f"\nSelected model saved to: "
+    f"{SELECTED_MODEL_PATH}"
 )
 
-# ----------------------------------------------------------------
-# 9. SAVE MODEL METADATA
-# ----------------------------------------------------------------
 
-best_row = results_df.iloc[0]
+# ----------------------------------------------------------------
+# 16. SAVE MODEL METADATA
+# ----------------------------------------------------------------
 
 model_metadata = {
-    "selected_model": best_model_name,
-    "accuracy": float(best_row["accuracy"]),
-    "precision_weighted": float(
-        best_row["precision_weighted"]
-    ),
-    "recall_weighted": float(
-        best_row["recall_weighted"]
-    ),
-    "f1_weighted": float(
-        best_row["f1_weighted"]
-    ),
-    "classes": class_names.tolist()
+
+    "selected_model":
+        best_model_name,
+
+    "accuracy":
+        float(
+            best_row["accuracy"]
+        ),
+
+    "precision_weighted":
+        float(
+            best_row[
+                "precision_weighted"
+            ]
+        ),
+
+    "recall_weighted":
+        float(
+            best_row[
+                "recall_weighted"
+            ]
+        ),
+
+    "f1_weighted":
+        float(
+            best_row[
+                "f1_weighted"
+            ]
+        ),
+
+    "precision_macro":
+        float(
+            best_row[
+                "precision_macro"
+            ]
+        ),
+
+    "recall_macro":
+        float(
+            best_row[
+                "recall_macro"
+            ]
+        ),
+
+    "f1_macro":
+        float(
+            best_row[
+                "f1_macro"
+            ]
+        ),
+
+    "classes":
+        class_names.tolist(),
+
+    "selection_metric":
+        "Macro F1 Score"
 }
+
 
 joblib.dump(
     model_metadata,
-    "model_metadata.pkl"
+    MODEL_METADATA_PATH
 )
 
 print(
-    "Model metadata saved to: "
-    "model_metadata.pkl"
+    f"Model metadata saved to: "
+    f"{MODEL_METADATA_PATH}"
 )
 
+
 # ----------------------------------------------------------------
-# 10. FINAL SUMMARY
+# 17. FINAL SUMMARY
 # ----------------------------------------------------------------
 
 print("\n" + "=" * 70)
 print("STEP 6 COMPLETED SUCCESSFULLY")
 print("=" * 70)
 
-print("\nGenerated files:")
+print("\nGenerated Classification Reports:")
 
-print("  - logistic_regression_classification_report.txt")
-print("  - multinomial_naive_bayes_classification_report.txt")
-print("  - linear_svm_classification_report.txt")
+print(
+    "  - logistic_regression_classification_report.txt"
+)
 
-print("  - logistic_regression_confusion_matrix.png")
-print("  - multinomial_naive_bayes_confusion_matrix.png")
-print("  - linear_svm_confusion_matrix.png")
+print(
+    "  - multinomial_naive_bayes_classification_report.txt"
+)
 
-print("  - model_comparison.csv")
-print("  - model_performance_comparison.png")
-print("  - selected_model.pkl")
-print("  - model_metadata.pkl")
+print(
+    "  - linear_svm_classification_report.txt"
+)
 
-print("\nSelected model:")
-print(best_model_name)
 
-print("\nEvaluation completed successfully.")
+print("\nGenerated Confusion Matrices:")
+
+print(
+    "  - logistic_regression_confusion_matrix.png"
+)
+
+print(
+    "  - multinomial_naive_bayes_confusion_matrix.png"
+)
+
+print(
+    "  - linear_svm_confusion_matrix.png"
+)
+
+
+print("\nGenerated Comparison Files:")
+
+print(
+    "  - model_comparison.csv"
+)
+
+print(
+    "  - model_performance_comparison.png"
+)
+
+
+print("\nFinal Model Files:")
+
+print(
+    "  - selected_model.pkl"
+)
+
+print(
+    "  - model_metadata.pkl"
+)
+
+
+print("\nSelected Model:")
+print(
+    best_model_name
+)
+
+print(
+    "\nSelection Metric:"
+)
+
+print(
+    "Macro F1 Score"
+)
+
+print(
+    "\nEvaluation completed successfully."
+)
