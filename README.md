@@ -1,174 +1,153 @@
-# Clinical Trial Disease Category Classification Using NLP and Machine Learning
+# 🧬 Clinical Trial Disease Category Classification Using NLP
 
-## 1. Project Overview
+## 📌 Project Overview
 
-The **Clinical Trial Disease Category Classification Using NLP and Machine Learning** project is a healthcare analytics application that uses **Natural Language Processing (NLP)** and **Machine Learning** to automatically classify clinical trials into disease categories based on their clinical trial descriptions.
+The **Clinical Trial Disease Category Classification Using NLP** project is an end-to-end Natural Language Processing and Machine Learning application designed to classify clinical trial summaries into appropriate disease categories.
 
-The system analyzes the `brief_summary` of each clinical trial, preprocesses the medical text, converts the text into numerical **TF-IDF features**, trains multiple machine learning classification models, evaluates their performance, and uses the selected model to predict the disease category of new clinical trial summaries.
+Clinical trial datasets contain large amounts of unstructured medical text, including study summaries, treatment information, eligibility criteria, disease information, and clinical outcomes. Manually analyzing this information can be difficult and time-consuming.
 
-The project also includes a **Streamlit web application** that provides an interactive interface for disease-category prediction and model-performance visualization.
+This project focuses on the **Brief Summary** of each clinical trial and applies **Natural Language Processing (NLP)** and **Machine Learning** techniques to automatically predict the corresponding **Disease Category**.
+
+The final solution includes an interactive **Streamlit web application** for:
+
+- Clinical trial data exploration
+- Exploratory Data Analysis (EDA)
+- Disease category prediction
+- Model performance comparison
+- Medical text pattern analysis
 
 ---
 
-## 2. Project Objectives
+# 🎯 Project Objectives
 
 The main objectives of this project are:
 
-* Collect and inspect clinical trial data.
-* Extract relevant clinical trial information.
-* Clean and preprocess medical text using NLP techniques.
-* Explore disease-category distributions and clinical-trial text patterns.
-* Identify frequently occurring medical terms.
-* Convert clinical text into numerical features using TF-IDF.
-* Train multiple machine learning classification models.
-* Compare model performance using standard evaluation metrics.
-* Automatically select the model with the highest weighted F1-score.
-* Predict disease categories for new clinical trial descriptions.
-* Generate insights and reports for healthcare analytics and medical research.
-* Provide an interactive Streamlit application for prediction and analysis.
+- Collect and understand clinical trial data
+- Clean and preprocess clinical trial summaries
+- Perform Exploratory Data Analysis on medical text
+- Apply NLP techniques to clinical trial summaries
+- Convert medical text into numerical features using TF-IDF
+- Train multiple Machine Learning classification models
+- Compare model performance using classification metrics
+- Select the model using Macro F1 Score
+- Predict disease categories from new clinical trial summaries
+- Analyze disease-specific patterns and frequently occurring medical terms
+- Develop an interactive Streamlit application
+- Build an end-to-end medical NLP classification pipeline
 
 ---
 
-## 3. Dataset
+# 📊 Dataset
 
-### Input Dataset
+The project uses a clinical trial dataset containing **60,337 clinical trial records**.
 
-The project uses the following raw dataset:
+The original dataset contains **16 columns** with information such as:
 
-```text
-clinical_trials_raw_patient2trial_conditions_new.csv
-```
+- Clinical trial ID
+- Trial title
+- Official title
+- Brief summary
+- Conditions
+- Interventions
+- Study status
+- Study type
+- Phase
+- Sex
+- Minimum age
+- Maximum age
+- Healthy volunteer information
+- Eligibility criteria
+- ClinicalTrials URL
+- Disease category
 
-### Important Columns
+For this classification problem, the main columns used are:
 
-| Column                   | Description                             |
-| ------------------------ | --------------------------------------- |
-| `nct_id`                 | Unique clinical trial identifier        |
-| `brief_summary`          | Brief description of the clinical trial |
-| `source_condition_query` | Original disease/condition category     |
-
-During Step 1, `source_condition_query` is renamed to:
-
-```text
-disease_category
-```
-
-The main NLP input is:
-
-```text
-brief_summary
-```
-
-The prediction target is:
-
-```text
-disease_category
-```
+| Column | Purpose |
+|---|---|
+| `nct_id` | Unique clinical trial identifier |
+| `brief_summary` | Input medical text used for NLP |
+| `source_condition_query` | Original disease-category target |
+| `disease_category` | Renamed target variable used for classification |
 
 ---
 
-## 4. Technologies Used
+# 🏷️ Disease Categories
 
-### Programming Language
+The dataset contains **8 disease categories**:
 
-* Python 3.13
+1. Breast Cancer
+2. Type 2 Diabetes
+3. COVID-19
+4. Anxiety
+5. Chronic Obstructive Pulmonary Disease
+6. Rheumatoid Arthritis
+7. Glaucoma
+8. Sickle Cell Anemia
 
-### Libraries
+The dataset is **imbalanced**, meaning some disease categories contain more clinical trials than others.
 
-* Pandas
-* NumPy
-* Scikit-learn
-* NLTK
-* Matplotlib
-* Seaborn
-* Joblib
-* Streamlit
-* Plotly
-
-### Machine Learning Techniques
-
-* TF-IDF Vectorization
-* Logistic Regression
-* Multinomial Naive Bayes
-* Linear Support Vector Machine (LinearSVC)
+Therefore, both **Weighted** and **Macro** evaluation metrics are used during model evaluation.
 
 ---
 
-## 5. Project Workflow
+# 🔄 Project Workflow
 
 ```text
-Raw Clinical Trial Dataset
-          |
-          v
-Step 1 - Data Collection
-          |
-          v
-Step 2 - Text Preprocessing
-          |
-          v
-Step 3 - Exploratory Data Analysis
-          |
-          v
-Step 4 - TF-IDF Feature Extraction
-          |
-          v
-Step 5 - Model Training
-          |
-          v
-Step 6 - Model Evaluation
-          |
-          v
-Step 7 - Insights & Reporting
-          |
-          v
-Streamlit Application
-          |
-          v
+Clinical Trial Dataset
+        ↓
+Data Collection
+        ↓
+Data Preprocessing
+        ↓
+Exploratory Data Analysis
+        ↓
+NLP Text Processing
+        ↓
+TF-IDF Feature Extraction
+        ↓
+Train-Test Split
+        ↓
+Machine Learning Model Training
+        ↓
+Model Evaluation
+        ↓
+Best Model Selection
+        ↓
+Insights & Reporting
+        ↓
 Disease Category Prediction
+        ↓
+Streamlit Application
 ```
 
 ---
 
-# 6. Step 1 - Data Collection
+# 1️⃣ Data Collection
 
-File:
+The first stage loads and analyzes the raw clinical trial dataset.
 
-```text
-step1_data_collection.py
-```
+The following operations are performed:
 
-### Purpose
+- Load the clinical trial CSV dataset
+- Check dataset shape
+- Display column names
+- Inspect data types
+- Analyze missing values
+- Check duplicate clinical trial IDs
+- Analyze the `brief_summary` column
+- Analyze disease-category distribution
+- Select the required columns
+- Rename the target column to `disease_category`
 
-Step 1 loads the raw clinical trial dataset and performs an initial inspection.
-
-The script checks:
-
-* Dataset shape
-* Column names
-* Data types
-* First few records
-* Missing values
-* Duplicate trial IDs
-* Sample clinical-trial summary
-* Average summary length
-* Number of disease categories
-* Disease-category distribution
-
-### Selected Columns
-
-The following columns are used for the NLP pipeline:
+Selected columns:
 
 ```python
-df_selected = df[
-    ["nct_id", "brief_summary", "source_condition_query"]
-].rename(
-    columns={
-        "source_condition_query": "disease_category"
-    }
-)
+nct_id
+brief_summary
+disease_category
 ```
 
-### Output
+The selected dataset is saved as:
 
 ```text
 clinical_trials_selected.csv
@@ -176,205 +155,95 @@ clinical_trials_selected.csv
 
 ---
 
-# 7. Step 2 - Text Preprocessing
+# 2️⃣ Data Preprocessing
 
-File:
+Clinical trial summaries contain unstructured medical text.
 
-```text
-step2_preprocessing.py
-```
+The preprocessing stage prepares this text for Machine Learning.
 
-### Purpose
+### Text preprocessing includes:
 
-Clinical trial descriptions contain natural-language text that must be cleaned before machine learning.
+- Converting text to lowercase
+- Removing HTML tags
+- Removing URLs
+- Removing special characters
+- Removing unnecessary spaces
+- Tokenizing text
+- Removing English stopwords
+- Preserving important negation words:
+  - `no`
+  - `not`
+  - `nor`
+- Applying WordNet lemmatization
 
-The preprocessing pipeline performs:
+The project also calculates:
 
-1. Missing-value handling
-2. Duplicate trial removal
-3. Lowercase conversion
-4. HTML removal
-5. URL removal
-6. Special-character removal
-7. Extra-space removal
-8. Tokenization
-9. Stopword removal
-10. Negation-word preservation
-11. Word lemmatization
+- Original text length
+- Cleaned text length
+- Word count
 
-### Important Preserved Words
-
-The following negation words are retained:
-
-```text
-no
-not
-nor
-```
-
-This is useful because negation can be important when interpreting medical text.
-
-### Example
-
-Original:
-
-```text
-Patients with cardiovascular disease are NOT eligible for this study.
-```
-
-After preprocessing, the text is converted into a simplified normalized representation while preserving important terms such as `not`.
-
-### Output
+The cleaned dataset is saved as:
 
 ```text
 clinical_trials_cleaned.csv
 ```
 
-Important generated columns include:
+---
 
-```text
-nct_id
-brief_summary
-disease_category
-cleaned_summary
-original_text_length
-cleaned_text_length
-word_count
-```
+# 3️⃣ Exploratory Data Analysis
+
+Exploratory Data Analysis is performed to understand the structure and patterns of clinical trial data.
+
+### EDA includes:
+
+- Disease category distribution
+- Clinical trial count by disease category
+- Clinical summary length distribution
+- Most frequently occurring medical terms
+- Top medical terms for each disease category
+- Average summary length by disease category
+- Category-level text patterns
+- Medical text statistics
+
+Visualizations are generated using:
+
+- Matplotlib
+- Seaborn
+- Plotly
 
 ---
 
-# 8. Shared Text Preprocessing Module
+# 4️⃣ NLP and TF-IDF Feature Extraction
 
-File:
+Machine Learning models cannot directly process raw text.
 
-```text
-text_preprocessing.py
-```
+Therefore, clinical trial summaries are transformed into numerical features using:
 
-This module contains the reusable function:
+## TF-IDF
+
+**TF-IDF** stands for:
+
+> Term Frequency – Inverse Document Frequency
+
+TF-IDF measures the importance of words and phrases within documents relative to the complete collection of clinical trial summaries.
+
+The TF-IDF vectorizer uses:
 
 ```python
-clean_medical_text()
+max_features=20000
+min_df=2
+max_df=0.95
+ngram_range=(1, 2)
+sublinear_tf=True
+strip_accents="unicode"
 ```
 
-The same preprocessing logic is used during prediction so that the text entered into the Streamlit application is processed consistently with the text used during model training.
+Both:
 
-This consistency is important because the trained TF-IDF vectorizer expects text prepared using the same preprocessing pipeline.
+- Unigrams
+- Bigrams
 
----
-
-# 9. Step 3 - Exploratory Data Analysis
-
-File:
-
-```text
-step3_eda.py
-```
-
-### Purpose
-
-Step 3 explores the clinical trial dataset and identifies important patterns.
-
-### Analysis Performed
-
-#### Disease Category Distribution
-
-The number of clinical trials in each disease category is calculated.
-
-Output:
-
-```text
-disease_category_distribution.csv
-```
-
-#### Summary Length Distribution
-
-The character length of clinical-trial summaries is analyzed.
-
-#### Frequently Occurring Terms
-
-The most frequently occurring terms in the cleaned clinical-trial summaries are identified.
-
-Output:
-
-```text
-top_terms_overall.csv
-```
-
-#### Category-Level Terms
-
-Frequently occurring terms are also analyzed separately for different disease categories.
-
-#### Summary Length by Disease Category
-
-The project compares clinical-trial summary lengths across disease categories.
-
-Output:
-
-```text
-average_summary_length_by_category.csv
-```
-
-#### EDA Summary
-
-General EDA statistics are saved in:
-
-```text
-eda_summary.csv
-```
-
-### Generated Figures
-
-```text
-figures/
-├── category_distribution.png
-├── summary_length_distribution.png
-├── top_terms_overall.png
-├── top_terms_by_category.png
-├── summary_length_by_category.png
-└── average_summary_length_by_category.png
-```
-
----
-
-# 10. Step 4 - TF-IDF Feature Extraction
-
-File:
-
-```text
-step4_tfidf.py
-```
-
-### Purpose
-
-Machine learning algorithms require numerical input. Since clinical trial summaries are text, the project converts the cleaned text into numerical features using **TF-IDF (Term Frequency-Inverse Document Frequency)**.
-
-### TF-IDF Configuration
-
-```python
-TfidfVectorizer(
-    max_features=20000,
-    min_df=2,
-    max_df=0.95,
-    ngram_range=(1, 2),
-    sublinear_tf=True,
-    strip_accents="unicode"
-)
-```
-
-### Parameters
-
-| Parameter                 | Purpose                                          |
-| ------------------------- | ------------------------------------------------ |
-| `max_features=20000`      | Limits the vocabulary size                       |
-| `min_df=2`                | Removes extremely rare terms                     |
-| `max_df=0.95`             | Removes terms occurring in almost every document |
-| `ngram_range=(1,2)`       | Uses unigrams and bigrams                        |
-| `sublinear_tf=True`       | Applies logarithmic term-frequency scaling       |
-| `strip_accents="unicode"` | Normalizes accented characters                   |
-
-### Output
+are included.
 
 The trained vectorizer is saved as:
 
@@ -382,89 +251,55 @@ The trained vectorizer is saved as:
 tfidf_vectorizer.pkl
 ```
 
-The top TF-IDF features are saved as:
+---
+
+# 5️⃣ Train-Test Split
+
+To prevent test-data leakage, the dataset is split **before fitting the final TF-IDF vectorizer**.
+
+The workflow is:
 
 ```text
-top_tfidf_features.csv
+Cleaned Text
+      ↓
+Train-Test Split
+      ↓
+Fit TF-IDF on Training Data
+      ↓
+Transform Training Data
+      ↓
+Transform Test Data
 ```
 
-The TF-IDF matrix remains sparse to reduce unnecessary memory usage.
-
----
-
-# 11. Step 5 - Model Training
-
-File:
-
-```text
-step5_train_models.py
-```
-
-Three machine learning models are trained.
-
-## 11.1 Logistic Regression
+The split uses:
 
 ```python
-LogisticRegression(
-    max_iter=2000,
-    class_weight="balanced",
-    random_state=42
-)
+test_size=0.20
+random_state=42
+stratify=y
 ```
 
-Logistic Regression is a widely used linear classification algorithm that works effectively with high-dimensional sparse text features.
+Stratification helps preserve the disease-category distribution in both training and testing datasets.
 
 ---
 
-## 11.2 Multinomial Naive Bayes
+# 6️⃣ Machine Learning Models
 
-```python
-MultinomialNB(alpha=0.5)
-```
+Three Machine Learning classification algorithms are trained.
 
-Multinomial Naive Bayes is commonly used for text classification because it works naturally with word-frequency and TF-IDF-style features.
+## Logistic Regression
 
----
+A linear classification algorithm suitable for high-dimensional sparse text features.
 
-## 11.3 Linear SVM
+## Multinomial Naive Bayes
 
-```python
-LinearSVC(
-    class_weight="balanced",
-    random_state=42
-)
-```
+A probabilistic classification algorithm commonly used for NLP and text-classification problems.
 
-Linear SVM is suitable for high-dimensional text classification problems and often performs well with sparse TF-IDF features.
+## Linear Support Vector Machine
 
----
+Linear SVM is effective for high-dimensional text classification and identifies decision boundaries between disease categories.
 
-## Train-Test Split
-
-The dataset is divided into:
-
-```text
-80% Training
-20% Testing
-```
-
-The split uses stratification to maintain the disease-category distribution.
-
-```python
-train_test_split(
-    X,
-    y,
-    test_size=0.20,
-    random_state=42,
-    stratify=y
-)
-```
-
----
-
-# 12. Saved Machine Learning Models
-
-The following models are saved:
+The trained models are saved as:
 
 ```text
 logistic_regression.pkl
@@ -472,61 +307,37 @@ multinomial_naive_bayes.pkl
 linear_svm.pkl
 ```
 
-The label encoder is saved as:
-
-```text
-label_encoder.pkl
-```
-
-The test data is saved as:
-
-```text
-X_test.pkl
-y_test.pkl
-```
-
 ---
 
-# 13. Step 6 - Model Evaluation
+# 7️⃣ Model Evaluation
 
-File:
+Each Machine Learning model is evaluated using multiple classification metrics.
+
+### Evaluation Metrics
+
+- Accuracy
+- Weighted Precision
+- Weighted Recall
+- Weighted F1 Score
+- Macro Precision
+- Macro Recall
+- Macro F1 Score
+- Classification Report
+- Confusion Matrix
+
+### Why Macro F1?
+
+The clinical trial dataset contains imbalanced disease categories.
+
+**Macro F1 Score** calculates the F1 score independently for every disease category and then gives equal importance to each class.
+
+Therefore, Macro F1 is used as the primary metric for selecting the final model.
+
+The model comparison results are saved as:
 
 ```text
-step6_evaluation.py
+model_comparison.csv
 ```
-
-Each trained model is evaluated using:
-
-* Accuracy
-* Weighted Precision
-* Weighted Recall
-* Weighted F1-score
-
-### Accuracy
-
-Measures the proportion of correctly classified clinical trials.
-
-### Precision
-
-Measures how many predictions assigned to a category were actually correct.
-
-### Recall
-
-Measures how many actual instances of a category were correctly identified.
-
-### F1-score
-
-Combines precision and recall into a single metric.
-
-### Weighted Metrics
-
-Weighted averaging accounts for the number of samples in each disease category.
-
----
-
-# 14. Model Selection
-
-The model with the **highest weighted F1-score** is automatically selected.
 
 The selected model is saved as:
 
@@ -534,237 +345,162 @@ The selected model is saved as:
 selected_model.pkl
 ```
 
-Model information is stored in:
+Model information and evaluation metrics are stored in:
 
 ```text
 model_metadata.pkl
 ```
 
-The complete model comparison is saved as:
+---
 
-```text
-model_comparison.csv
-```
+# 8️⃣ Insights and Reporting
 
-### Model Comparison Figure
+The project generates insights about clinical trial data and model performance.
 
-```text
-model_performance_comparison.png
-```
+The reporting stage includes:
 
-### Confusion Matrices
+### Disease Category Distribution
 
-Confusion matrices are generated for the trained models to analyze correct and incorrect disease-category predictions.
+Analyzes how clinical trials are distributed across disease categories.
+
+### Frequently Occurring Medical Terms
+
+Identifies commonly occurring terms within clinical trial summaries.
+
+### Clinical Trial Text Patterns
+
+Analyzes:
+
+- Summary lengths
+- Word counts
+- Average text length
+- Median text length
+
+### Disease-Specific Patterns
+
+Compares text characteristics across different disease categories.
+
+### Model Performance
+
+Reports:
+
+- Accuracy
+- Precision
+- Recall
+- F1 Score
+- Macro metrics
+- Weighted metrics
+
+These insights support healthcare analytics and medical research exploration.
 
 ---
 
-# 15. Step 7 - Insights & Reporting
+# 9️⃣ Disease Category Prediction
 
-File:
+The prediction pipeline accepts a new clinical trial brief summary.
 
-```text
-step7_insights_reporting.py
-```
-
-This stage converts the analysis and model results into structured insights.
-
-## Disease Category Distribution
-
-The report identifies:
-
-* Total number of clinical trials
-* Number of disease categories
-* Number of trials per category
-* Percentage distribution of each category
-
-Output:
+The prediction workflow is:
 
 ```text
-insights/disease_category_insights.csv
-```
-
----
-
-## Frequently Occurring Medical Terms
-
-The most common terms appearing in the cleaned clinical-trial summaries are reported.
-
-Output:
-
-```text
-insights/frequent_medical_terms.csv
-```
-
----
-
-## Clinical Trial Text Patterns
-
-The project analyzes:
-
-* Average summary length
-* Median summary length
-* Average word count
-* Median word count
-* Number of disease categories
-* Category-level summary patterns
-
-Outputs:
-
-```text
-insights/text_pattern_insights.csv
-insights/category_text_patterns.csv
-```
-
----
-
-## Model Performance Insights
-
-The performance of all trained models is summarized.
-
-Output:
-
-```text
-insights/model_performance_insights.csv
-```
-
-A consolidated text report is also generated:
-
-```text
-insights/final_insights_report.txt
-```
-
----
-
-# 16. Healthcare Analytics and Research Support
-
-The system can support healthcare analytics and medical research by helping organize and classify large collections of clinical-trial descriptions.
-
-Potential applications include:
-
-* Clinical trial information organization
-* Disease-category classification
-* Clinical research data exploration
-* Medical literature and trial information retrieval
-* Trial dataset analysis
-* Automated text categorization
-* Research-oriented analytics
-* Identification of common medical terms and text patterns
-
-The system is intended as an **analytical support tool**. Its predictions should not replace qualified medical, clinical, or research judgment.
-
----
-
-# 17. Step 8 - Streamlit Application
-
-File:
-
-```text
-app.py
-```
-
-The project includes an interactive Streamlit web application.
-
-### Main Application Sections
-
-```text
-Overview
-EDA
-Disease Prediction
-Model Performance
-```
-
----
-
-## Overview
-
-The Overview page displays information such as:
-
-* Total clinical trials
-* Number of disease categories
-* Number of TF-IDF features
-* Selected machine learning model
-
----
-
-## EDA
-
-The application displays the generated exploratory analysis, including:
-
-* Disease-category distribution
-* Frequently occurring terms
-* Clinical-trial text patterns
-* EDA visualizations
-
----
-
-## Disease Prediction
-
-Users can enter a new clinical-trial brief summary.
-
-Example:
-
-```text
-A clinical trial will evaluate the safety and effectiveness
-of a new treatment in patients with heart failure. The study
-will measure cardiovascular function, symptoms, and
-hospitalization outcomes.
-```
-
-The application performs:
-
-```text
-Input Text
-    ↓
+New Clinical Trial Summary
+        ↓
 Text Preprocessing
-    ↓
+        ↓
 TF-IDF Transformation
-    ↓
+        ↓
 Selected ML Model
-    ↓
-Disease Category Prediction
+        ↓
+Encoded Prediction
+        ↓
+Label Encoder
+        ↓
+Predicted Disease Category
 ```
 
-The application displays the predicted disease category.
+The model only predicts disease categories that were included in the training dataset.
 
 ---
 
-## Model Performance
+# 🖥️ Streamlit Application
 
-The application displays the performance comparison of:
+An interactive Streamlit application is developed to demonstrate the complete project.
 
-* Logistic Regression
-* Multinomial Naive Bayes
-* Linear SVM
+The application contains four main pages.
 
-Performance metrics include:
+## 📊 Overview
 
-* Accuracy
-* Weighted Precision
-* Weighted Recall
-* Weighted F1-score
+Displays:
 
-Interactive charts are created using Plotly.
+- Number of clinical trials
+- Number of disease categories
+- Number of TF-IDF features
+- Selected Machine Learning model
+- Project objective
+- Machine Learning pipeline
+- Models used
+- Supported disease categories
+
+## 📈 EDA
+
+Displays:
+
+- Disease category distribution
+- Summary length distribution
+- Important medical terms
+- Average summary length by disease category
+- Dataset preview
+
+## 🧠 Disease Prediction
+
+The user can enter or paste a clinical trial brief summary.
+
+The application then:
+
+1. Cleans the medical text
+2. Converts the text into TF-IDF features
+3. Applies the selected Machine Learning model
+4. Predicts the disease category
+5. Displays the predicted disease category
+6. Displays prediction probabilities when supported by the model
+7. Displays decision scores when Linear SVM is selected
+
+## 📊 Model Performance
+
+Displays:
+
+- Model comparison table
+- Accuracy
+- Weighted Precision
+- Weighted Recall
+- Weighted F1
+- Macro Precision
+- Macro Recall
+- Macro F1
+- Selected model
+- Performance comparison visualization
 
 ---
 
-# 18. Project Folder Structure
+# 📁 Project Structure
 
 ```text
 Clinical_Trial_Disease_Classification/
 │
-├── clinical_trials_raw_patient2trial_conditions_new.csv
+├── Step1_Data_Collection.py
+├── Step2_Data_Preprocessing.py
+├── Step3_EDA.py
+├── Step4_TFIDF.py
+├── Step5_Model_Training.py
+├── Step6_Model_Evaluation.py
+├── Step7_Insights_Reporting.py
+├── Step8_Disease_Prediction.py
+│
+├── app.py
+├── README.md
+├── requirements.txt
+│
 ├── clinical_trials_selected.csv
 ├── clinical_trials_cleaned.csv
-│
-├── step1_data_collection.py
-├── step2_preprocessing.py
-├── step3_eda.py
-├── step4_tfidf.py
-├── step5_train_models.py
-├── step6_evaluation.py
-├── step7_insights_reporting.py
-├── text_preprocessing.py
-├── app.py
 │
 ├── tfidf_vectorizer.pkl
 ├── label_encoder.pkl
@@ -773,305 +509,248 @@ Clinical_Trial_Disease_Classification/
 ├── linear_svm.pkl
 ├── selected_model.pkl
 ├── model_metadata.pkl
+│
 ├── X_test.pkl
 ├── y_test.pkl
-│
 ├── model_comparison.csv
 ├── top_terms_overall.csv
-├── top_tfidf_features.csv
-├── disease_category_distribution.csv
-├── average_summary_length_by_category.csv
-├── eda_summary.csv
-│
-├── model_performance_comparison.png
 │
 ├── figures/
-│   ├── category_distribution.png
-│   ├── summary_length_distribution.png
-│   ├── top_terms_overall.png
-│   ├── top_terms_by_category.png
-│   ├── summary_length_by_category.png
-│   └── average_summary_length_by_category.png
 │
 └── insights/
-    ├── disease_category_insights.csv
-    ├── frequent_medical_terms.csv
-    ├── text_pattern_insights.csv
-    ├── category_text_patterns.csv
-    ├── model_performance_insights.csv
-    └── final_insights_report.txt
 ```
 
 ---
 
-# 19. Installation
+# 🛠️ Technologies Used
 
-It is recommended to create and activate a virtual environment.
+## Programming Language
 
-### Create Virtual Environment
+- Python
+
+## Data Analysis
+
+- Pandas
+- NumPy
+
+## Natural Language Processing
+
+- NLTK
+- TF-IDF
+- Stopword Removal
+- Lemmatization
+- Unigrams
+- Bigrams
+
+## Machine Learning
+
+- Scikit-learn
+
+## Machine Learning Algorithms
+
+- Logistic Regression
+- Multinomial Naive Bayes
+- Linear SVM
+
+## Data Visualization
+
+- Matplotlib
+- Seaborn
+- Plotly
+
+## Model Storage
+
+- Joblib
+
+## Web Application
+
+- Streamlit
+
+---
+
+# 📦 Required Python Libraries
+
+Install the required libraries using:
 
 ```bash
-py -3.13 -m venv .venv
+pip install pandas numpy scikit-learn nltk matplotlib seaborn plotly streamlit joblib
 ```
 
-### Activate Virtual Environment
+Alternatively, install from `requirements.txt`:
 
-Windows:
+```bash
+pip install -r requirements.txt
+```
+
+---
+
+# 📄 requirements.txt
+
+A basic `requirements.txt` can contain:
+
+```text
+pandas
+numpy
+scikit-learn
+nltk
+matplotlib
+seaborn
+plotly
+streamlit
+joblib
+```
+
+---
+
+# ▶️ How to Run the Project
+
+## Step 1: Create Virtual Environment
+
+```bash
+python -m venv .venv
+```
+
+## Step 2: Activate Virtual Environment
+
+### Windows
 
 ```bash
 .venv\Scripts\activate
 ```
 
-### Install Required Libraries
+## Step 3: Install Dependencies
 
 ```bash
-python -m pip install pandas numpy scikit-learn nltk matplotlib seaborn plotly streamlit joblib
+pip install -r requirements.txt
 ```
 
----
+## Step 4: Run the Project Pipeline
 
-# 20. NLTK Resources
-
-The preprocessing module downloads the required NLTK resources:
-
-```text
-stopwords
-wordnet
-omw-1.4
-```
-
-They can also be downloaded manually:
-
-```python
-import nltk
-
-nltk.download("stopwords")
-nltk.download("wordnet")
-nltk.download("omw-1.4")
-```
-
----
-
-# 21. Running the Project
-
-Run the project steps in the following order.
-
-### Step 1
+Run the Python scripts in sequence:
 
 ```bash
-python step1_data_collection.py
+python Step1_Data_Collection.py
+python Step2_Data_Preprocessing.py
+python Step3_EDA.py
+python Step4_TFIDF.py
+python Step5_Model_Training.py
+python Step6_Model_Evaluation.py
+python Step7_Insights_Reporting.py
 ```
 
-Generates:
-
-```text
-clinical_trials_selected.csv
-```
-
-### Step 2
-
-```bash
-python step2_preprocessing.py
-```
-
-Generates:
-
-```text
-clinical_trials_cleaned.csv
-```
-
-### Step 3
-
-```bash
-python step3_eda.py
-```
-
-Generates EDA CSV files and figures.
-
-### Step 4
-
-```bash
-python step4_tfidf.py
-```
-
-Generates:
-
-```text
-tfidf_vectorizer.pkl
-top_tfidf_features.csv
-```
-
-### Step 5
-
-```bash
-python step5_train_models.py
-```
-
-Generates the trained model files and test data.
-
-### Step 6
-
-```bash
-python step6_evaluation.py
-```
-
-Evaluates the models and selects the model with the highest weighted F1-score.
-
-### Step 7
-
-```bash
-python step7_insights_reporting.py
-```
-
-Generates the final insights and reporting files.
-
-### Step 8
-
-Run the Streamlit application:
-
-```bash
-python -m streamlit run app.py
-```
-
-Alternatively:
+## Step 5: Run Streamlit Application
 
 ```bash
 streamlit run app.py
 ```
 
-The application will open in the browser.
+The Streamlit application will open in the web browser.
 
 ---
 
-# 22. Example Prediction
+# 📌 Model Artifacts
 
-### Input
+The application requires the following trained files:
 
 ```text
-A clinical trial evaluates a new therapy for patients with
-advanced cancer. The study will assess treatment safety,
-tumor response, disease progression, and clinical outcomes.
+tfidf_vectorizer.pkl
+selected_model.pkl
+label_encoder.pkl
+model_metadata.pkl
 ```
 
-### Processing
-
-```text
-Clinical Trial Text
-        ↓
-Lowercase
-        ↓
-Remove HTML / URLs / Special Characters
-        ↓
-Stopword Removal
-        ↓
-Lemmatization
-        ↓
-TF-IDF Vectorization
-        ↓
-Selected Machine Learning Model
-        ↓
-Disease Category
-```
-
-The final category is determined by the trained model and the disease categories present in the training dataset.
+These files must be available in the same project directory as `app.py`.
 
 ---
 
-# 23. Model Evaluation Metrics
+# ⚠️ Important Model Limitation
 
-The project uses the following evaluation metrics:
+This project is a **closed-set multiclass classification system**.
 
-| Metric             | Purpose                                                    |
-| ------------------ | ---------------------------------------------------------- |
-| Accuracy           | Overall percentage of correct predictions                  |
-| Weighted Precision | Precision weighted by category support                     |
-| Weighted Recall    | Recall weighted by category support                        |
-| Weighted F1-score  | Combined precision and recall weighted by category support |
+The trained model can only classify a clinical trial into one of the disease categories present in the training dataset.
 
-The model with the highest weighted F1-score is automatically selected for deployment.
+If a clinical trial summary belongs to a completely different disease that was not included during training, the model will still assign it to one of the known categories.
+
+Therefore, predictions should always be interpreted within the scope of the training dataset.
 
 ---
 
-# 24. Advantages
+# ⚕️ Medical Disclaimer
 
-* Uses real clinical-trial text data.
-* Automates medical text preprocessing.
-* Converts text into machine-learning-ready numerical features.
-* Supports multiple classification algorithms.
-* Uses stratified train-test splitting.
-* Compares models using multiple evaluation metrics.
-* Automatically selects the model based on weighted F1-score.
-* Provides reusable preprocessing logic.
-* Generates structured insights and reports.
-* Includes an interactive Streamlit interface.
-* Can process new clinical-trial summaries for disease-category prediction.
+This project is developed for **educational, academic, research, and data-science demonstration purposes only**.
 
----
+The predictions generated by the Machine Learning model:
 
-# 25. Limitations
+- Are not medical diagnoses
+- Should not be used for patient care
+- Should not be used for treatment decisions
+- Should not replace healthcare professionals
+- Should not be used for clinical decision-making
 
-* Classification performance depends on the quality and coverage of the training dataset.
-* TF-IDF primarily captures statistical relationships between terms rather than deeper medical context.
-* Rare disease categories may have fewer training examples.
-* The model may not correctly classify clinical descriptions containing terminology that differs significantly from the training data.
-* Predictions should be considered analytical outputs rather than medical diagnoses.
-* The system does not replace clinical experts or qualified medical researchers.
+The system demonstrates the application of NLP and Machine Learning techniques to clinical trial text classification.
 
 ---
 
-# 26. Future Enhancements
+# 💡 Key Learning Outcomes
+
+This project demonstrates practical knowledge of:
+
+- Data collection
+- Data preprocessing
+- Exploratory Data Analysis
+- Natural Language Processing
+- Text cleaning
+- Stopword removal
+- Lemmatization
+- TF-IDF vectorization
+- Feature extraction
+- Multiclass classification
+- Class imbalance evaluation
+- Machine Learning model comparison
+- Accuracy, Precision, Recall and F1 Score
+- Macro and Weighted evaluation metrics
+- Confusion Matrix
+- Model serialization
+- New-text prediction
+- Streamlit application development
+- End-to-end Machine Learning project implementation
+
+---
+
+# 🚀 Future Enhancements
 
 Possible future improvements include:
 
-* Using domain-specific medical NLP models such as BioBERT or ClinicalBERT.
-* Using transformer-based text classification.
-* Hyperparameter tuning.
-* Cross-validation.
-* Handling class imbalance using additional techniques.
-* Adding explainable AI features.
-* Displaying important terms contributing to predictions.
-* Adding confidence calibration.
-* Supporting multilingual clinical text.
-* Adding a database for storing prediction history.
-* Deploying the Streamlit application to a cloud platform.
-* Integrating additional clinical-trial metadata.
+- Adding more disease categories
+- Expanding the clinical trial dataset
+- Comparing TF-IDF models with word embeddings
+- Exploring transformer-based NLP models such as BERT
+- Adding confidence-threshold handling for uncertain predictions
+- Improving handling of clinical trials outside the trained disease categories
+- Adding additional clinical trial features
+- Deploying the Streamlit application to a cloud platform
+- Developing advanced medical-text analytics dashboards
 
 ---
 
-# 27. Project Outcome
+# ✅ Conclusion
 
-The completed system provides an end-to-end NLP and machine-learning pipeline for clinical trial disease-category classification.
+The **Clinical Trial Disease Category Classification Using NLP** project demonstrates an end-to-end Machine Learning workflow for automatically classifying clinical trial brief summaries into disease categories.
 
-The project demonstrates the complete workflow:
+The project combines:
 
-```text
-Data Collection
-      ↓
-Data Preprocessing
-      ↓
-Exploratory Data Analysis
-      ↓
-NLP Feature Engineering
-      ↓
-Machine Learning
-      ↓
-Model Evaluation
-      ↓
-Insights & Reporting
-      ↓
-Prediction
-      ↓
-Streamlit Deployment
-```
+**Clinical Trial Data + Text Preprocessing + NLP + TF-IDF + Machine Learning + Model Evaluation + Streamlit**
 
-The final application provides a practical interface for exploring clinical-trial data and performing automated disease-category classification.
+to create an interactive medical-text classification system.
+
+The final application allows users to explore clinical trial data, analyze disease-specific patterns, compare Machine Learning models, and classify new clinical trial summaries into supported disease categories.
 
 ---
 
-# 28. Disclaimer
+## 👨‍💻 Project Type
 
-This project is developed for **educational, analytical, and research purposes**.
+**Data Science | Natural Language Processing | Machine Learning | Healthcare Analytics**
 
-The predicted disease categories are generated by a machine-learning model and should not be interpreted as medical diagnoses or clinical recommendations.
+## 📚 Use
 
-Clinical, healthcare, and research decisions should be made using appropriate expert review and validated medical information.
+**Educational and Research Purposes Only**
